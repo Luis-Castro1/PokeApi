@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { useForm } from '../Hooks/UseForm'
 
 export const FunctionsContext = createContext();
 
@@ -12,6 +13,11 @@ export function Functions({ children }) {
     const [globalPokemons, setglobalPokemons] = useState([])
     const [offset, setoffset] = useState(0)
     const [load, setload] = useState(false)
+
+    // Utilizar CustomHook - useForm
+    const { valueSearch, onInputChange, onResetForm } = useForm({
+        valueSearch: '',
+    });
 
     // Obtener los 10 primeros
     const getAllPokemons = async (limit = 10) => {
@@ -80,7 +86,7 @@ export function Functions({ children }) {
             setgetPokemons(updatedPokemons);
         } catch (error) {
             console.error(error)
-        }finally{
+        } finally {
             setload(false)
         }
     }
@@ -94,14 +100,21 @@ export function Functions({ children }) {
         getAllPokemons()
     }, [offset])
 
+    useEffect(() => {
+        getAllGlobalPokemons();
+    }, []);
+
     return (
         <FunctionsContext.Provider
             value={{
                 getPokemons,
-                getAllPokemons,
+                globalPokemons,
                 onClickLoadMore,
                 deletePokemon,
-                load
+                load,
+                valueSearch,
+                onInputChange,
+                onResetForm
             }}
         >
             {children}
